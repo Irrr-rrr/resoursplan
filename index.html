@@ -4,25 +4,28 @@
     <meta charset="UTF-8">
     <title>Дашборд ресурсного планирования</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f6f8; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; }
-        .error { color: red; background: #ffe6e6; padding: 10px; border-radius: 4px; }
-        .user-list, .project-list { list-style: none; padding: 0; }
-        .user-list li, .project-list li { padding: 8px; border-bottom: 1px solid #eee; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f4f6f8; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #2980b9; margin-top: 30px; }
+        .error { color: #e74c3c; background: #fadbd8; padding: 15px; border-radius: 4px; border-left: 5px solid #e74c3c; }
+        .loading { color: #3498db; font-style: italic; }
+        ul { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        li { padding: 12px; background: #ecf0f1; border-radius: 4px; border-left: 4px solid #3498db; }
+        .project-list li { border-left-color: #e67e22; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Дашборд ресурсного планирования</h1>
+        <h1>📊 Дашборд ресурсного планирования</h1>
         <div id="dashboard-container">
-            <p>Загрузка данных...</p>
+            <p class="loading">Загрузка данных из Битрикс24...</p>
         </div>
     </div>
 
     <script>
-        // !!! ВСТАВЬТЕ СЮДА ВАШ URL ВЕБХУКА !!!
-        const WEBHOOK_URL = 'hhttps://dev.bx/rest/1/8q25fkxc4xlszbdn/';
+        // ВАШ URL ВЕБХУКА ИЗ СКРИНШОТА
+        const WEBHOOK_URL = 'https://dev.bx/rest/1/8q25fkxcf4xlszbdn/';
 
         document.addEventListener('DOMContentLoaded', () => {
             initDashboard();
@@ -33,12 +36,25 @@
             
             try {
                 // 1. Запрос списка сотрудников
+                // Метод user.get возвращает список пользователей
                 const usersResponse = await fetch(`${WEBHOOK_URL}user.get.json`);
+                
+                if (!usersResponse.ok) {
+                    throw new Error(`Ошибка HTTP: ${usersResponse.status}`);
+                }
+                
                 const usersData = await usersResponse.json();
+                
+                // Проверяем, есть ли ошибка в ответе от Битрикс24
+                if (usersData.error) {
+                    throw new Error(`Ошибка Битрикс24: ${usersData.error_description || usersData.error}`);
+                }
+                
                 const users = usersData.result || [];
 
                 // 2. Запрос списка проектов (рабочих групп)
-                const groupsResponse = await fetch(`${WEBHOOK_URL}socialnetwork.get.json`);
+                // Метод sonet_group.get возвращает список групп/проектов
+                const groupsResponse = await fetch(`${WEBHOOK_URL}sonet_group.get.json`);
                 const groupsData = await groupsResponse.json();
                 const groups = groupsData.result || [];
 
@@ -47,7 +63,7 @@
 
             } catch (error) {
                 console.error('Ошибка:', error);
-                container.innerHTML = `<p class="error">Не удалось загрузить данные. Проверьте правильность URL вебхука и права доступа.</p>`;
+                container.innerHTML = `<p class="error">❌ Не удалось загрузить данные.<br><small>${error.message}</small></p>`;
             }
         }
 
@@ -58,20 +74,22 @@
             if (users.length === 0) {
                 html += '<p>Нет данных о сотрудниках.</p>';
             } else {
-                html += '<ul class="user-list">';
+                html += '<ul>';
                 users.forEach(user => {
-                    html += `<li>${user.NAME} ${user.LAST_NAME} (ID: ${user.ID})</li>`;
+                    // У некоторых пользователей может не быть имени или фамилии
+                    const name = `${user.NAME || ''} ${user.LAST_NAME || ''}`.trim() || `Пользователь ID:${user.ID}`;
+                    html += `<li>${name} <br><small>ID: ${user.ID}</small></li>`;
                 });
                 html += '</ul>';
             }
 
-            html += '<h2>📁 Проекты</h2>';
+            html += '<h2>📁 Проекты (Рабочие группы)</h2>';
             if (groups.length === 0) {
                 html += '<p>Нет данных о проектах.</p>';
             } else {
                 html += '<ul class="project-list">';
                 groups.forEach(group => {
-                    html += `<li>${group.NAME} (ID: ${group.ID})</li>`;
+                    html += `<li>${group.NAME} <br><small>ID: ${group.ID}</small></li>`;
                 });
                 html += '</ul>';
             }
