@@ -37,7 +37,7 @@
             try {
                 // 1. Запрос списка сотрудников
                 // Метод user.get возвращает список пользователей
-                const usersResponse = await fetch(`${WEBHOOK_URL}user.get.json`);
+                const usersResponse = await fetch('https://dev.bx/rest/1/8q25fkxc4xlszbdn/user.get.json');
                 
                 if (!usersResponse.ok) {
                     throw new Error(`Ошибка HTTP: ${usersResponse.status}`);
