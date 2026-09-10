@@ -38,7 +38,7 @@
                 const users = usersData.result || [];
 
                 // 2. Запрос списка проектов (рабочих групп)
-                const groupsResponse = await fetch(`${WEBHOOK_URL}sonet_group.get.json`);
+                const groupsResponse = await fetch(`${WEBHOOK_URL}socialnetwork.get.json`);
                 const groupsData = await groupsResponse.json();
                 const groups = groupsData.result || [];
 
