@@ -78,7 +78,7 @@
                 users.forEach(user => {
                     // У некоторых пользователей может не быть имени или фамилии
                     const name = `${user.NAME || ''} ${user.LAST_NAME || ''}`.trim() || `Пользователь ID:${user.ID}`;
-                    html += `<li>${name} <br><small>ID: ${user.ID}</small></li>`;
+                    html += `<li>${name} <br><small>ID: ${user.ID}</small><br>Email: ${user.EMAIL}</li>`;
                 });
                 html += '</ul>';
             }
