@@ -39,9 +39,9 @@
                 // Метод user.get возвращает список пользователей
                 const usersResponse = await fetch('https://dev.bx/rest/1/kx3hnvxmmg99d7cn/user.get.json');
                 
-                if (!usersResponse.ok) {
+                /*if (!usersResponse.ok) {
                     throw new Error(`Ошибка HTTP: ${usersResponse.status}`);
-                }
+                }*/
                 
                 const usersData = await usersResponse.json();
                 
