@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Дашборд ресурсного планирования</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f6f8; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; }
+        .error { color: red; background: #ffe6e6; padding: 10px; border-radius: 4px; }
+        .user-list, .project-list { list-style: none; padding: 0; }
+        .user-list li, .project-list li { padding: 8px; border-bottom: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Дашборд ресурсного планирования</h1>
+        <div id="dashboard-container">
+            <p>Загрузка данных...</p>
+        </div>
+    </div>
+
+    <script>
+        // !!! ВСТАВЬТЕ СЮДА ВАШ URL ВЕБХУКА !!!
+        const WEBHOOK_URL = 'hhttps://dev.bx/rest/1/8q25fkxc4xlszbdn/';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initDashboard();
+        });
+
+        async function initDashboard() {
+            const container = document.getElementById('dashboard-container');
+            
+            try {
+                // 1. Запрос списка сотрудников
+                const usersResponse = await fetch(`${WEBHOOK_URL}user.get.json`);
+                const usersData = await usersResponse.json();
+                const users = usersData.result || [];
+
+                // 2. Запрос списка проектов (рабочих групп)
+                const groupsResponse = await fetch(`${WEBHOOK_URL}sonet_group.get.json`);
+                const groupsData = await groupsResponse.json();
+                const groups = groupsData.result || [];
+
+                // 3. Отрисовка данных
+                renderDashboard(users, groups);
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+                container.innerHTML = `<p class="error">Не удалось загрузить данные. Проверьте правильность URL вебхука и права доступа.</p>`;
+            }
+        }
+
+        function renderDashboard(users, groups) {
+            const container = document.getElementById('dashboard-container');
+            
+            let html = '<h2>👥 Сотрудники</h2>';
+            if (users.length === 0) {
+                html += '<p>Нет данных о сотрудниках.</p>';
+            } else {
+                html += '<ul class="user-list">';
+                users.forEach(user => {
+                    html += `<li>${user.NAME} ${user.LAST_NAME} (ID: ${user.ID})</li>`;
+                });
+                html += '</ul>';
+            }
+
+            html += '<h2>📁 Проекты</h2>';
+            if (groups.length === 0) {
+                html += '<p>Нет данных о проектах.</p>';
+            } else {
+                html += '<ul class="project-list">';
+                groups.forEach(group => {
+                    html += `<li>${group.NAME} (ID: ${group.ID})</li>`;
+                });
+                html += '</ul>';
+            }
+
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
