@@ -37,7 +37,7 @@
             try {
                 // 1. Запрос списка сотрудников
                 // Метод user.get возвращает список пользователей
-                const usersResponse = await fetch('http://dev.bx/rest/1/8q25fkxc4xlszbdn/user.get.json');
+                const usersResponse = await fetch('https://dev.bx/rest/1/kx3hnvxmmg99d7cn/user.get.json');
                 
                 if (!usersResponse.ok) {
                     throw new Error(`Ошибка HTTP: ${usersResponse.status}`);
@@ -54,12 +54,12 @@
 
                 // 2. Запрос списка проектов (рабочих групп)
                 // Метод sonet_group.get возвращает список групп/проектов
-                const groupsResponse = await fetch(`${WEBHOOK_URL}sonet_group.get.json`);
-                const groupsData = await groupsResponse.json();
-                const groups = groupsData.result || [];
+                //const groupsResponse = await fetch(`${WEBHOOK_URL}sonet_group.get.json`);
+                //const groupsData = await groupsResponse.json();
+                //const groups = groupsData.result || [];
 
                 // 3. Отрисовка данных
-                renderDashboard(users, groups);
+                renderDashboard(users);
 
             } catch (error) {
                 console.error('Ошибка:', error);
@@ -83,7 +83,7 @@
                 html += '</ul>';
             }
 
-            html += '<h2>📁 Проекты (Рабочие группы)</h2>';
+            /*html += '<h2>📁 Проекты (Рабочие группы)</h2>';
             if (groups.length === 0) {
                 html += '<p>Нет данных о проектах.</p>';
             } else {
@@ -92,7 +92,7 @@
                     html += `<li>${group.NAME} <br><small>ID: ${group.ID}</small></li>`;
                 });
                 html += '</ul>';
-            }
+            }*/
 
             container.innerHTML = html;
         }
